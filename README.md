@@ -23,14 +23,12 @@ The user uploads two photos — a clear face close-up and a full-body standing s
 
 ## Screenshots
 
-<!-- Add your screenshots here. Put the image files in a `screenshots/` folder in the repo, then update the paths below. -->
-
 <p align="center">
-  <img src="screenshots/home.png" width="80%" alt="Style & Glow home page" />
+  <img src="home.png" width="80%" alt="Style & Glow home page" />
 </p>
 
 <p align="center">
-  <img src="screenshots/results.png" width="80%" alt="Style & Glow recommendation results" />
+  <img src="results.png" width="80%" alt="Style & Glow recommendation results" />
 </p>
 
 ---
@@ -158,5 +156,4 @@ Open the URL Vite prints (usually `http://localhost:5173`). Keep the backend run
 
 ## Author
 
-**Nancy Jangra** — B.Tech CSE, IGDTUW
-[GitHub](https://github.com/NancyJangra)
+**Nancy**
