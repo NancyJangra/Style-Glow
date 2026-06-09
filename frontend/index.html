@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dress Recommender</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; line-height: 1.5; }
+    h1 { text-align: center; }
+    .field { margin: 16px 0; }
+    label { display: block; font-weight: bold; margin-bottom: 4px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+    #results { margin-top: 30px; }
+    .result-box { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-top: 16px; }
+    ul { margin: 8px 0; }
+    .status { color: #666; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>Dress Recommender</h1>
+
+  <div class="field">
+    <label for="faceInput">Face photo (clear close-up)</label>
+    <input type="file" id="faceInput" accept="image/*" />
+  </div>
+
+  <div class="field">
+    <label for="bodyInput">Body photo (full body, standing)</label>
+    <input type="file" id="bodyInput" accept="image/*" />
+  </div>
+
+  <button id="analyzeBtn">Analyze</button>
+
+  <div id="results"></div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/analyze";
+
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const resultsDiv = document.getElementById("results");
+
+    analyzeBtn.addEventListener("click", async () => {
+      const faceFile = document.getElementById("faceInput").files[0];
+      const bodyFile = document.getElementById("bodyInput").files[0];
+
+      // Basic validation
+      if (!faceFile || !bodyFile) {
+        resultsDiv.innerHTML = "<p class='status'>Please choose both a face photo and a body photo.</p>";
+        return;
+      }
+
+      resultsDiv.innerHTML = "<p class='status'>Analyzing... please wait.</p>";
+
+      // Package the files to send to the backend
+      const formData = new FormData();
+      formData.append("face", faceFile);
+      formData.append("body", bodyFile);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        // If the backend returned an error message
+        if (data.error) {
+          resultsDiv.innerHTML = `<p class='status'>Error: ${data.error}</p>`;
+          return;
+        }
+
+        // Build the results display
+        const colorsList = data.colors.map(c => `<li>${c}</li>`).join("");
+        const cutsList = data.cuts.map(c => `<li>${c}</li>`).join("");
+
+        resultsDiv.innerHTML = `
+          <div class="result-box">
+            <h2>Your Results</h2>
+            <p><strong>Undertone:</strong> ${data.undertone}</p>
+            <p><strong>Body shape:</strong> ${data.body_shape} (ratio ${data.ratio})</p>
+            <h3>Colors that suit you</h3>
+            <ul>${colorsList}</ul>
+            <h3>Cuts &amp; silhouettes</h3>
+            <ul>${cutsList}</ul>
+          </div>
+        `;
+      } catch (err) {
+        resultsDiv.innerHTML = "<p class='status'>Could not reach the server. Is the backend running?</p>";
+      }
+    });
+  </script>
+</body>
+</html>
